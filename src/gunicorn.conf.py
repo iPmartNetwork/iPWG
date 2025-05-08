@@ -1,11 +1,5 @@
 import multiprocessing
-
-try:
-    import dashboard
-except ModuleNotFoundError as e:
-    if "flask_limiter" in str(e):
-        raise ImportError("The 'flask_limiter' module is missing. Install it using 'pip install flask-limiter'.") from e
-    raise
+import dashboard
 
 app_host, app_port = dashboard.get_host_bind()
 
