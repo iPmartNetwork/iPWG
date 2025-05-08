@@ -110,6 +110,27 @@ RESET='\033[0m'
 
     print_box "iPWG Dashboard installed successfully!" "${LIGHT_GREEN}"
     print_box "Enter ./wgd.sh start to start the dashboard!" "${YELLOW}"
+    print_box "Creating and enabling systemd service..." "$YELLOW"
+    cat <<EOF | sudo tee /etc/systemd/system/ipwg-dashboard.service > /dev/null
+[Unit]
+Description=iPWG Dashboard Service
+After=network.target
+
+[Service]
+WorkingDirectory=$(pwd)
+ExecStart=/usr/bin/python3 $(pwd)/src/dashboard.py
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    sudo systemctl daemon-reexec
+    sudo systemctl enable ipwg-dashboard
+    sudo systemctl start ipwg-dashboard
+    print_box "Systemd service ipwg-dashboard is now enabled." "$GREEN"
+
 }
 
 check_wgd_status(){
