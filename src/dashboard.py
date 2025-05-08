@@ -29,7 +29,7 @@ from util import regex_match, check_DNS, check_Allowed_IPs, check_remote_endpoin
     check_IP_with_range, clean_IP_with_range
 
 # Dashboard Version
-DASHBOARD_VERSION = 'v3.0.6'
+DASHBOARD_VERSION = 'v4.0.1'
 
 # WireGuard's configuration path
 WG_CONF_PATH = None
@@ -42,7 +42,7 @@ if not os.path.isdir(DB_PATH):
     os.mkdir(DB_PATH)
 
 DB_FILE_PATH = os.path.join(configuration_path, 'db', 'wgdashboard.db')
-DASHBOARD_CONF = os.path.join(configuration_path, 'wg-dashboard.ini')
+DASHBOARD_CONF = os.path.join(configuration_path, 'iPWG-Doshboard.ini')
 
 # Upgrade Required
 UPDATE = None
