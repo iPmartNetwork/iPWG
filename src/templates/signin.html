@@ -1,0 +1,102 @@
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ورود به پنل iPWG</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+    <style>
+        /* General Styles */
+        body {
+            background-color: #0d1b2a;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: 'Vazir', sans-serif;
+            margin: 0;
+        }
+
+        /* Login Card Styles */
+        .login-card {
+            background-color: #1b263b;
+            border: none;
+            border-radius: 10px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-card img {
+            max-width: 80px;
+            margin-bottom: 20px;
+        }
+
+        .login-card h3 {
+            margin-bottom: 30px;
+            color: #e09f3e;
+            font-size: 1.5rem;
+        }
+
+        /* Button Styles */
+        .btn-login {
+            background-color: #e09f3e;
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin-top: 20px; /* Adjusted margin to move the button lower */
+        }
+
+        .btn-login:hover {
+            background-color: #f2b262;
+        }
+
+        /* Form Styles */
+        .form-group label {
+            float: right;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            text-align: right;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card shadow">
+        <img src="/static/img/logo.png" alt="iPWG Logo">
+        <h3>ورود به پنل</h3>
+        <form method="POST" action="/auth">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="username">نام کاربری</label>
+                    <input type="text" id="username" name="username" class="form-control" required />
+                </div>
+                <div class="form-group">
+                    <label for="password">رمز عبور</label>
+                    <input type="password" id="password" name="password" class="form-control" required />
+                </div>
+            </div>
+            <button type="submit" class="btn btn-login btn-block mt-4">ورود</button>
+        </form>
+    </div>
+</body>
+</html>
