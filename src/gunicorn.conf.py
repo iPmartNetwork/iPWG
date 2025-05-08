@@ -1,10 +1,13 @@
 import multiprocessing
 import dashboard
+import logging
+
+logging.basicConfig(level=logging.ERROR)  # Configure logging for error messages
 
 try:
     app_host, app_port = dashboard.get_host_bind()
 except Exception as e:
-    print(f"Error fetching host bind: {e}")
+    logging.error(f"Error fetching host bind: {e}")
     app_host, app_port = "127.0.0.1", 8000  # Default values
 
 worker_class = 'gthread'
