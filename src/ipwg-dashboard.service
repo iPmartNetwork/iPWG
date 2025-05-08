@@ -1,0 +1,13 @@
+[Unit]
+Description=iPWG WireGuard Dashboard
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/iPWG
+ExecStart=/usr/bin/python3 /opt/iPWG/src/dashboard.py
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
