@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# wgd.sh - Copyright(C) 2025
+# install.sh - Copyright(C) 2025
 ## Edited By iPmartNetwork
 
 app_name="dashboard.py"
