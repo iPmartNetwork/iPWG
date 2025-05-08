@@ -35,3 +35,4 @@ tzlocal==5.0.1
 urllib3==2.0.3
 Werkzeug==2.3.6
 psutil
+flask_limiter
