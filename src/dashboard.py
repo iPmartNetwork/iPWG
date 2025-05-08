@@ -911,7 +911,6 @@ def signout():
     return redirect(url_for('signin'))
 
 
-@app.route('/auth', methods=['POST'])
 def auth():
     """
     Authentication request
@@ -2040,12 +2039,33 @@ if __name__ == "__main__":
     config.clear()
     app.run(host=app_ip, debug=False, port=app_port)
 
-@app.route('/auth', methods=['POST'])
 def authenticate():
     username = request.form.get('username')
     password = request.form.get('password')
 
     if username == "admin" and password == "admin":  # Replace with secure check
+        session['logged_in'] = True
+        return redirect(url_for('index'))
+
+    message = "نام کاربری یا رمز عبور اشتباه است."
+    return render_template("signin.html", message=message)
+
+import hashlib
+import sqlite3
+
+@app.route('/auth', methods=['POST'])
+def authenticate():
+    username = request.form.get('username')
+    password = request.form.get('password')
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
+
+    conn = sqlite3.connect(DB_FILE_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM users WHERE username=? AND password=?", (username, password_hash))
+    user = cursor.fetchone()
+    conn.close()
+
+    if user:
         session['logged_in'] = True
         return redirect(url_for('index'))
 
