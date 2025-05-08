@@ -2039,3 +2039,15 @@ if __name__ == "__main__":
     WG_CONF_PATH = config.get("Server", "wg_conf_path")
     config.clear()
     app.run(host=app_ip, debug=False, port=app_port)
+
+@app.route('/auth', methods=['POST'])
+def authenticate():
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    if username == "admin" and password == "admin":  # Replace with secure check
+        session['logged_in'] = True
+        return redirect(url_for('index'))
+
+    message = "نام کاربری یا رمز عبور اشتباه است."
+    return render_template("signin.html", message=message)
