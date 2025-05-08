@@ -203,7 +203,21 @@ gunicorn_stop () {
   kill $(cat ./gunicorn.pid)
 }
 
+check_python_dependencies() {
+  log "INFO" "Checking and installing required Python dependencies..."
+  if [ -f "requirements.txt" ]; then
+    python3 -m pip install -U -r requirements.txt || {
+      log "ERROR" "Failed to install Python dependencies. Please check requirements.txt."
+      exit 1
+    }
+  else
+    log "ERROR" "requirements.txt not found. Cannot verify Python dependencies."
+    exit 1
+  fi
+}
+
 start_wgd () {
+    check_python_dependencies
     gunicorn_start
 }
 
@@ -255,7 +269,7 @@ update_wgd() {
     fi
     mv wgd.sh wgd.sh.old
     safe_execute "git stash"
-    safe_execute "git pull https://github.com/iPmartNetwork/WireGuard-Dashboard.git $new_ver --force"
+    safe_execute "git pull https://github.com/iPmartNetwork/iPWG.git $new_ver --force"
     safe_execute "python3 -m pip install -U pip"
     safe_execute "python3 -m pip install -U -r requirements.txt"
     log "INFO" "Update completed successfully!"
