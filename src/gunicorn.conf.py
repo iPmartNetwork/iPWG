@@ -1,7 +1,11 @@
 import multiprocessing
 import dashboard
 
-app_host, app_port = dashboard.get_host_bind()
+try:
+    app_host, app_port = dashboard.get_host_bind()
+except Exception as e:
+    print(f"Error fetching host bind: {e}")
+    app_host, app_port = "127.0.0.1", 8000  # Default values
 
 worker_class = 'gthread'
 workers = multiprocessing.cpu_count() * 2 + 1
