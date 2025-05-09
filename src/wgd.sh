@@ -151,7 +151,20 @@ gunicorn_start() {
   GREEN='\033[92m'
   YELLOW='\033[93m'
   BLUE='\033[96m'
+  RED='\033[91m'
   NC='\033[0m'
+
+  # Check if gunicorn is installed
+  if ! command -v gunicorn &> /dev/null; then
+    print_box "Error: Gunicorn is not installed. Please install it using 'pip install gunicorn'." "$RED"
+    exit 1
+  fi
+
+  # Check if the configuration file contains the 'Server' section
+  if ! grep -q "\[Server\]" ./config.ini; then
+    print_box "Error: Missing 'Server' section in the configuration file (config.ini)." "$RED"
+    exit 1
+  fi
 
   print_box "Starting Wireguard Panel with Gunicorn in the background." "$YELLOW"
   
