@@ -1,3 +1,4 @@
+
 APScheduler==3.10.1
 blinker==1.6.2
 certbot==2.6.0
@@ -9,7 +10,7 @@ ConfigArgParse==1.5.3
 configobj==5.0.8
 cryptography==41.0.1
 distro==1.8.0
-Flask
+Flask==2.3.2
 Flask-QRcode==3.1.0
 gunicorn==20.1.0
 icmplib==3.0.3
@@ -34,4 +35,4 @@ typing_extensions==4.6.3
 tzlocal==5.0.1
 urllib3==2.0.3
 Werkzeug==2.3.6
-psutil
+psutil==7.0.0
