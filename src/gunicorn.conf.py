@@ -7,7 +7,10 @@ logging.basicConfig(level=logging.ERROR)  # Configure logging for error messages
 try:
     app_host, app_port = dashboard.get_host_bind()
 except Exception as e:
-    logging.error(f"Error fetching host bind: {e}")
+    if "No section: 'Server'" in str(e):
+        logging.error("Configuration error: Missing 'Server' section in the configuration file.")
+    else:
+        logging.error(f"Unexpected error fetching host bind: {e}")
     app_host, app_port = "127.0.0.1", 8000  # Default values
 
 worker_class = 'gthread'
