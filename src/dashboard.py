@@ -1905,6 +1905,9 @@ def init_dashboard():
     if not os.path.isfile(DASHBOARD_CONF):
         open(DASHBOARD_CONF, "w+").close()
     config = get_dashboard_conf()
+    # Ensure 'Server' section exists
+    if "Server" not in config:
+        config['Server'] = {}
     # Default dashboard account setting
     if "Account" not in config:
         config['Account'] = {}
@@ -1913,8 +1916,6 @@ def init_dashboard():
     if "password" not in config['Account']:
         config['Account']['password'] = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'
     # Default dashboard server setting
-    if "Server" not in config:
-        config['Server'] = {}
     if 'wg_conf_path' not in config['Server']:
         config['Server']['wg_conf_path'] = '/etc/wireguard'
     if 'app_ip' not in config['Server']:
@@ -1957,7 +1958,7 @@ def check_update():
     """
     config = get_dashboard_conf()
     try:
-        data = urllib.request.urlopen("https://api.github.com/repos/amirmbn/WireGuard-Dashboard.git").read()
+        data = urllib.request.urlopen("https://api.github.com/repos/ipmartnetwork/iPWG.git").read()
         output = json.loads(data)
         release = [i for i in output if not i["prerelease"]]
 
@@ -1984,7 +1985,7 @@ def run_dashboard():
     global UPDATE
     UPDATE = check_update()
     config = configparser.ConfigParser(strict=False)
-    config.read('wg-dashboard.ini')
+    config.read('config.ini')
     # global app_ip
     app_ip = config.get("Server", "app_ip")
     # global app_port
