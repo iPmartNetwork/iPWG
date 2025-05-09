@@ -971,7 +971,7 @@ def settings():
                            peer_endpoint_allowed_ip=config.get("Peers", "peer_endpoint_allowed_ip"),
                            peer_mtu=config.get("Peers", "peer_mtu"),
                            peer_keepalive=config.get("Peers", "peer_keep_alive"),
-                           peer_remote_endpoint=config.get("Peers", "remote_endpoint"))
+                           peer_remote_endpoint=config.get("Peers", "peer_remote_endpoint"))
 
 
 @app.route('/update_acct', methods=['POST'])
@@ -1984,15 +1984,21 @@ def run_dashboard():
     global UPDATE
     UPDATE = check_update()
     config = configparser.ConfigParser(strict=False)
-    config.read('wg-dashboard.ini')
-    # global app_ip
-    app_ip = config.get("Server", "app_ip")
-    # global app_port
-    app_port = config.get("Server", "app_port")
-    global WG_CONF_PATH
-    WG_CONF_PATH = config.get("Server", "wg_conf_path")
+    config.read('config.ini')
+
+    try:
+        app_ip = config.get("Server", "app_ip")
+        app_port = config.get("Server", "app_port")
+        global WG_CONF_PATH
+        WG_CONF_PATH = config.get("Server", "wg_conf_path")
+    except configparser.NoSectionError:
+        print("Error: Missing 'Server' section in the configuration file. Using default values.")
+        app_ip = "127.0.0.1"
+        app_port = "8000"
+        WG_CONF_PATH = "/etc/wireguard"
+
     config.clear()
-    return app
+    app.run(host=app_ip, debug=False, port=app_port)
 
 
 """
@@ -2003,7 +2009,7 @@ Get host and port for web-server
 def get_host_bind():
     init_dashboard()
     config = configparser.ConfigParser(strict=False)
-    config.read('wg-dashboard.ini')
+    config.read('config.ini')
     app_ip = config.get("Server", "app_ip")
     app_port = config.get("Server", "app_port")
     return app_ip, app_port
@@ -2031,7 +2037,7 @@ if __name__ == "__main__":
     init_dashboard()
     UPDATE = check_update()
     config = configparser.ConfigParser(strict=False)
-    config.read('wg-dashboard.ini')
+    config.read('config.ini')
     # global app_ip
     app_ip = config.get("Server", "app_ip")
     # global app_port
