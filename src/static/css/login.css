@@ -1,0 +1,193 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    }
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('/static/fonts/Poppins-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('/static/fonts/Poppins-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+.language-selector {
+    font-family: 'Poppins';
+    width: 150px;
+    padding: 0.5em;
+    font-size: 1rem;
+    color: #333;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    position: fixed;
+}
+
+form#language-form {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: flex-end;
+    position: relative;
+}
+
+.language-selector:hover {
+    background-color: #eaeaea;
+}
+
+.language-selector:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+}
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background: #f8f9fa; /* Updated */
+    color: #34495e; /* Updated */
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+
+.main-container {
+    display: flex;
+    width: 80%;
+    max-width: 1200px;
+    background-color: #ffffff; /* Updated */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Softer shadow */
+    border-radius: 12px;
+    overflow: hidden;
+    }
+
+.form-container {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    }
+
+h1 {
+    font-size: 24px;
+    color: #2c3e50; /* Updated */
+    font-weight: 700;
+    margin-bottom: 20px;
+    }
+
+label {
+    font-size: 14px;
+    color: #495057; /* Updated */
+    font-weight: 500;
+    margin-bottom: 5px;
+    }
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ced4da; /* Updated */
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #f8f9fa; /* Lighter background for inputs */
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05); /* Softer inset shadow */
+    transition: border-color 0.3s, box-shadow 0.3s;
+    }
+.footer {
+    position: absolute;
+    bottom: 10px; 
+    right: 10px;
+    font-size: 14px;
+    color: #6c757d; /* Updated */
+    text-align: right;
+    }
+ 
+.footer a {
+    color: #007bff; /* Standard link blue */
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    }
+
+.footer a:hover {
+    color: #0056b3; /* Darker blue on hover */
+    text-decoration: underline;
+    }
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #007bff; /* Standard focus blue */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25); /* Softer focus shadow */
+    outline: none;
+    }
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff; /* Primary button blue */
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 2px;
+    }
+
+button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    }
+
+.message {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #6c757d; /* Updated */
+    }
+
+.message a {
+    color: #007bff; /* Standard link blue */
+    text-decoration: none;
+    }
+
+.message a:hover {
+    text-decoration: underline;
+    color: #0056b3; /* Darker blue on hover */
+    }
+
+.image-container {
+    flex: 1;
+    background-color: #e9ecef; /* Lighter gray for image background */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    position: relative; 
+    padding: 20px; 
+}
+
+.image-container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+        }
+    .image-container {
+        display: none;
+                
+        }
+    }

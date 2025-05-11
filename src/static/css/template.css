@@ -1,0 +1,325 @@
+@font-face {
+    font-family: 'Vazir';
+    src: url('../fonts/Vazir-Regular.woff2') format('woff2'),
+        url('../fonts/Vazir-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --bg-color: #2c3e50;
+    --text-color: #ecf0f1;
+    --card-bg-color: #34495e;
+    --accent-color: #3498db;
+    --secondary-text-color: #bdc3c7;
+    --border-color: #4a6572;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --hover-accent-color: #2980b9;
+}
+
+body.light-mode {
+    --bg-color: #ecf0f1;
+    --text-color: #2c3e50;
+    --card-bg-color: #ffffff;
+    --accent-color: #2980b9;
+    --secondary-text-color: #7f8c8d;
+    --border-color: #bdc3c7;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --hover-accent-color: #3498db;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Vazir', sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    direction: rtl;
+}
+
+.main-container {
+    width: 95%;
+    max-width: 420px;
+    margin: auto;
+    text-align: center;
+}
+
+.card {
+    background: var(--card-bg-color);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 0 20px var(--shadow-color);
+}
+
+.card-title {
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+    color: var(--accent-color);
+    text-align: center;
+}
+
+.info-box {
+    background: var(--bg-color);
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin: 10px 0;
+    box-shadow: 0 3px 8px var(--shadow-color);
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+.info-box h2 {
+    font-size: 1rem;
+    color: var(--accent-color);
+    margin-bottom: 6px;
+}
+
+.info-box p {
+    font-size: 0.95rem;
+    color: var(--secondary-text-color);
+}
+
+.progress-bar {
+    background: var(--border-color);
+    border-radius: 10px;
+    height: 16px;
+    overflow: hidden;
+    margin: 8px 0;
+}
+
+.progress-bar .progress {
+    background: var(--accent-color);
+    height: 100%;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+.footer-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.footer-actions button,
+.footer-actions a {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    text-decoration: none;
+    padding: 8px 16px;
+    font-family: Vazir;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.footer-actions button:hover,
+.footer-actions a:hover {
+    background-color: var(--hover-accent-color);
+}
+
+.icon-btn {
+    background-color: var(--accent-color);
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    background-color: var(--hover-accent-color);
+}
+
+.icon-btn img {
+    width: 24px;
+    height: 24px;
+}
+
+.server-location {
+    font-size: 1rem;
+    margin-right: 50px;
+    color: var(--secondary-text-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.server-location img {
+    width: 24px;
+    height: 16px;
+    border-radius: 3px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.download-clients {
+    margin-top: 20px;
+    background: var(--card-bg-color);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 3px 8px var(--shadow-color);
+}
+
+.download-clients h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: var(--accent-color);
+}
+
+.client-download {
+    display: inline-block;
+    margin: 0 10px;
+    padding: 10px 20px;
+    background: var(--accent-color);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.3s ease;
+    font-weight: bold;
+}
+
+.client-download:hover {
+    background: var(--hover-accent-color);
+}
+
+.client-download i {
+    margin-right: 8px;
+}
+
+.footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.github-link {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.github-link i {
+    margin-right: 8px;
+}
+
+.github-link:hover {
+    color: var(--accent-color);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: var(--card-bg-color);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal-content img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 10px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+@media (max-width: 480px) {
+    .main-container {
+        max-width: 340px;
+        margin: 10px auto;
+        padding: 0 10px;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .card-title {
+        font-size: 1.3rem;
+    }
+
+    .info-box {
+        padding: 10px;
+        margin: 8px 0;
+    }
+
+    .info-box h2 {
+        font-size: 0.85rem;
+    }
+
+    .info-box p {
+        font-size: 0.8rem;
+    }
+
+    .server-location {
+        font-size: 0.85rem;
+    }
+
+    .footer-actions {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .footer-actions button,
+    .footer-actions a {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+
+    .download-clients {
+        margin-top: 15px;
+        padding: 10px;
+    }
+
+    .download-clients h2 {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    .client-download {
+        display: inline-block;
+        margin: 4px;
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+}
