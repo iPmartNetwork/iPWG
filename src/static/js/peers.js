@@ -880,9 +880,13 @@ function loadAndDisplayPeers(configName, page = 1, limit = 10) {
             event.preventDefault();
             const peerName = document.getElementById("newPeerName").value.trim();
             const peerIp = document.getElementById("newPeerIp").value.trim();
-            const limitValue = document.getElementById("newPeerLimitValue").value;
-            const limitUnit = document.getElementById("newPeerLimitUnit").value;
-            const limit = `${limitValue}${limitUnit}`;
+            const limitValue = document.getElementById("newPeerLimitValue").value.trim(); // Trim value
+            const limitUnitFromInput = document.getElementById("newPeerLimitUnit").value; // e.g., "GB" or "MB"
+            
+            // Convert to "GiB" or "MiB" for consistency with edit form and likely backend expectation
+            const actualLimitUnit = limitUnitFromInput === "GB" ? "GiB" : "MiB";
+            const limit = `${limitValue}${actualLimitUnit}`;
+            
             const dns = document.getElementById("newPeerDns").value.trim();
             const persistentKeepalive = document.getElementById("newPeerPersistentKeepalive").value.trim();
             const mtu = document.getElementById("newPeerMtu").value.trim();
@@ -954,5 +958,4 @@ function loadAndDisplayPeers(configName, page = 1, limit = 10) {
         });
     }
 
-    const createActionButton = (iconClass, title, onClick) => {
-// ...existing code...
+}); // Correctly close the DOMContentLoaded event listener and remove duplicated content after this.
