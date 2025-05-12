@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}گزارشات سیستم - {{ super() }}{% endblock %}
+
+{% block page_title %}گزارشات سیستم{% endblock %}
+
+{% block content %}
+<h4>آخرین گزارشات:</h4>
+{% if logs %}
+    <div class="logs-container">
+        <pre><code>{{ logs_content }}</code></pre>
+    </div>
+{% else %}
+    <p>هیچ گزارشی برای نمایش وجود ندارد.</p>
+{% endif %}
+
+<form method="GET" action="{{ url_for('logs') }}" class="log-filter-form">
+    <div class="form-group">
+        <label for="limit">تعداد نمایش گزارشات:</label>
+        <input type="number" name="limit" id="limit" value="{{ limit }}" min="10" max="1000" class="form-control" style="width: auto; display: inline-block;">
+        <button type="submit" class="btn btn-sm btn-primary">اعمال</button>
+    </div>
+</form>
+
+<style>
+.logs-container {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 15px;
+    border-radius: 5px;
+    max-height: 500px;
+    overflow-y: auto;
+    direction: ltr; /* Logs are usually LTR */
+    text-align: left;
+}
+.logs-container pre {
+    margin: 0;
+    white-space: pre-wrap; /* Ensures lines wrap */
+    word-wrap: break-word; /* Breaks long words if necessary */
+}
+.log-filter-form {
+    margin-top: 20px;
+}
+</style>
+{% endblock %}

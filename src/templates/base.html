@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}پنل مدیریت Wireguard{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon-32x32.png') }}" type="image/png">
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="لوگو پنل" class="sidebar-logo">
+            <h2>پنل Wireguard</h2>
+        </div>
+        <ul>
+            <li><a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' else '' }}">داشبورد</a></li>
+            <li><a href="{{ url_for('peers') }}" class="{{ 'active' if request.endpoint == 'peers' else '' }}">کاربران</a></li>
+            <li><a href="{{ url_for('interfaces') }}" class="{{ 'active' if request.endpoint == 'interfaces' else '' }}">رابط‌ها</a></li>
+            <li><a href="{{ url_for('settings') }}" class="{{ 'active' if request.endpoint == 'settings' else '' }}">تنظیمات</a></li>
+            <li><a href="{{ url_for('backups') }}" class="{{ 'active' if request.endpoint == 'backups' else '' }}">پشتیبان‌گیری</a></li>
+            <li><a href="{{ url_for('logs') }}" class="{{ 'active' if request.endpoint == 'logs' else '' }}">گزارشات</a></li>
+            <li><a href="{{ url_for('logout') }}">خروج</a></li>
+        </ul>
+    </aside>
+    <main class="main-content">
+        <header class="header">
+            <h1>{% block page_title %}{% endblock %}</h1>
+            <!-- Может быть, здесь будут какие-то элементы управления или информация о пользователе -->
+        </header>
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category else 'info' }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    {% block scripts_extra %}{% endblock %}
+</body>
+</html>

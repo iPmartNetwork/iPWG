@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}پشتیبان‌گیری - {{ super() }}{% endblock %}
+
+{% block page_title %}مدیریت پشتیبان‌گیری{% endblock %}
+
+{% block content %}
+<div class="backup-actions">
+    <a href="{{ url_for('create_backup') }}" class="btn btn-primary">ایجاد پشتیبان جدید</a>
+    <form method="POST" action="{{ url_for('restore_backup') }}" enctype="multipart/form-data" style="display: inline-block; margin-right: 10px;">
+        <input type="file" name="backup_file" accept=".zip" required class="form-control" style="display: inline-block; width: auto;">
+        <button type="submit" class="btn btn-success">بازیابی از فایل</button>
+    </form>
+</div>
+
+<h4>پشتیبان‌های موجود:</h4>
+{% if backups %}
+    <table>
+        <thead>
+            <tr>
+                <th>نام فایل</th>
+                <th>تاریخ ایجاد</th>
+                <th>حجم</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for backup in backups %}
+            <tr>
+                <td>{{ backup.name }}</td>
+                <td>{{ backup.date_created }}</td>
+                <td>{{ backup.size }}</td>
+                <td>
+                    <a href="{{ url_for('download_backup', filename=backup.name) }}" class="btn btn-sm btn-info">دانلود</a>
+                    <a href="{{ url_for('delete_backup', filename=backup.name) }}" class="btn btn-sm btn-danger" onclick="return confirm('آیا از حذف این فایل پشتیبان مطمئن هستید؟');">حذف</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>هیچ فایل پشتیبانی یافت نشد.</p>
+{% endif %}
+
+<style>
+.backup-actions {
+    margin-bottom: 20px;
+}
+.backup-actions .form-control {
+    margin-left: 5px;
+}
+</style>
+{% endblock %}

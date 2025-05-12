@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}مدیریت کاربران - {{ super() }}{% endblock %}
+
+{% block page_title %}مدیریت کاربران Wireguard{% endblock %}
+
+{% block content %}
+<div class="controls">
+    <a href="{{ url_for('add_peer') }}" class="btn btn-primary">افزودن کاربر جدید</a>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>نام کاربری</th>
+            <th>آدرس IP</th>
+            <th>فعال/غیرفعال</th>
+            <th>ترافیک مصرفی</th>
+            <th>محدودیت ترافیک</th>
+            <th>تاریخ انقضا</th>
+            <th>عملیات</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for peer in peers %}
+        <tr>
+            <td>{{ peer.name }}</td>
+            <td>{{ peer.ip_address }}</td>
+            <td>{% if peer.is_active %}فعال{% else %}غیرفعال{% endif %}</td>
+            <td>{{ peer.traffic_usage }} GB</td>
+            <td>{{ peer.traffic_limit }} GB</td>
+            <td>{{ peer.expiry_date }}</td>
+            <td>
+                <a href="{{ url_for('edit_peer', peer_id=peer.id) }}" class="btn btn-sm btn-primary">ویرایش</a>
+                <a href="{{ url_for('delete_peer', peer_id=peer.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('آیا از حذف این کاربر مطمئن هستید؟');">حذف</a>
+                <a href="{{ url_for('view_peer_config', peer_id=peer.id) }}" class="btn btn-sm btn-info">مشاهده کانفیگ</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="7" style="text-align:center;">هیچ کاربری یافت نشد.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<style>
+.controls {
+    margin-bottom: 20px;
+}
+</style>
+{% endblock %}

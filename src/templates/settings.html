@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}تنظیمات - {{ super() }}{% endblock %}
+
+{% block page_title %}تنظیمات پنل{% endblock %}
+
+{% block content %}
+<form method="POST" action="{{ url_for('settings') }}">
+    {{ form.hidden_tag() if form and form.hidden_tag }}
+
+    <fieldset>
+        <legend>تنظیمات عمومی پنل</legend>
+        <div class="form-group">
+            {{ form.panel_port.label if form else '<label for="panel_port">پورت پنل</label>'|safe }}
+            {{ form.panel_port(class="form-control") if form else '<input type="number" name="panel_port" class="form-control">'|safe }}
+            {% if form and form.panel_port.errors %}
+                <ul class="errors">{% for error in form.panel_port.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.secret_key.label if form else '<label for="secret_key">کلید مخفی Flask</label>'|safe }}
+            {{ form.secret_key(class="form-control") if form else '<input type="text" name="secret_key" class="form-control">'|safe }}
+             {% if form and form.secret_key.errors %}
+                <ul class="errors">{% for error in form.secret_key.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="language">زبان پنل</label>
+            <select name="language" id="language" class="form-control">
+                <option value="fa" {% if current_language == 'fa' %}selected{% endif %}>فارسی</option>
+                <option value="en" {% if current_language == 'en' %}selected{% endif %}>English</option>
+            </select>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>تنظیمات Wireguard</legend>
+        <div class="form-group">
+            {{ form.wg_config_dir.label if form else '<label for="wg_config_dir">مسیر فایل‌های کانفیگ Wireguard</label>'|safe }}
+            {{ form.wg_config_dir(class="form-control") if form else '<input type="text" name="wg_config_dir" class="form-control">'|safe }}
+            {% if form and form.wg_config_dir.errors %}
+                <ul class="errors">{% for error in form.wg_config_dir.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+            {% endif %}
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>تنظیمات TLS (اختیاری)</legend>
+        <div class="form-group">
+            {{ form.tls_enabled.label if form else '<label for="tls_enabled">فعال‌سازی TLS</label>'|safe }}
+            {{ form.tls_enabled(class="form-check-input") if form else '<input type="checkbox" name="tls_enabled">'|safe }}
+        </div>
+        <div class="form-group">
+            {{ form.cert_path.label if form else '<label for="cert_path">مسیر فایل گواهینامه (fullchain.pem)</label>'|safe }}
+            {{ form.cert_path(class="form-control") if form else '<input type="text" name="cert_path" class="form-control">'|safe }}
+        </div>
+        <div class="form-group">
+            {{ form.key_path.label if form else '<label for="key_path">مسیر فایل کلید خصوصی (privkey.pem)</label>'|safe }}
+            {{ form.key_path(class="form-control") if form else '<input type="text" name="key_path" class="form-control">'|safe }}
+        </div>
+    </fieldset>
+
+    <button type="submit" class="btn btn-primary">ذخیره تنظیمات</button>
+</form>
+
+<style>
+fieldset {
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+legend {
+    padding: 0 10px;
+    font-weight: bold;
+    color: #3498db;
+}
+.errors li {
+    color: red;
+    font-size: 0.9em;
+}
+</style>
+{% endblock %}
