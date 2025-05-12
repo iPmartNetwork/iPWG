@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Peers - Wireguard Manager{% endblock %}
+
+{% block head_scripts %}
+    <script src="{{ url_for('static', filename='js/qrcode.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/peers.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Manage Peers</h1>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="peerTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="view-peers-tab" data-bs-toggle="tab" data-bs-target="#view-peers" type="button" role="tab" aria-controls="view-peers" aria-selected="true">View Peers</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="create-peer-tab" data-bs-toggle="tab" data-bs-target="#create-peer" type="button" role="tab" aria-controls="create-peer" aria-selected="false">Create Peer</button>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content" id="peerTabsContent">
+        <!-- View Peers Tab -->
+        <div class="tab-pane fade show active" id="view-peers" role="tabpanel" aria-labelledby="view-peers-tab">
+            <div class="mt-3">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="configFilter" class="form-label">Filter by Configuration:</label>
+                        <select id="configFilter" class="form-select">
+                            <option value="">All Configurations</option>
+                            {% for config_name in configs %}
+                            <option value="{{ config_name }}">{{ config_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="peerSearch" class="form-label">Search Peer:</label>
+                        <input type="text" id="peerSearch" class="form-control" placeholder="Enter peer name...">
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>IP Address</th>
+                                <th>Data Usage</th>
+                                <th>Expiry Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="peersTableBody">
+                            <!-- Peer rows will be dynamically inserted here by peers.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Peer Tab -->
+        <div class="tab-pane fade" id="create-peer" role="tabpanel" aria-labelledby="create-peer-tab">
+            <div class="mt-3">
+                <form id="createPeerForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="peerName" class="form-label">Peer Name:</label>
+                            <input type="text" class="form-control" id="peerName" name="peerName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="configFile" class="form-label">Configuration File:</label>
+                            <select class="form-select" id="configFile" name="configFile" required>
+                                {% for config_name in configs %}
+                                <option value="{{ config_name }}">{{ config_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="allowedIPs" class="form-label">Allowed IPs (optional):</label>
+                            <input type="text" class="form-control" id="allowedIPs" name="allowedIPs" placeholder="e.g., 10.0.0.2/32">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="dataLimit" class="form-label">Data Limit (GB, optional):</label>
+                            <input type="number" class="form-control" id="dataLimit" name="dataLimit" min="0">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="expiryTime" class="form-label">Expiry Time (days, optional):</label>
+                            <input type="number" class="form-control" id="expiryTime" name="expiryTime" min="0">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="dnsServers" class="form-label">DNS Servers (optional, comma-separated):</label>
+                            <input type="text" class="form-control" id="dnsServers" name="dnsServers" placeholder="e.g., 1.1.1.1, 8.8.8.8">
+                        </div>
+                    </div>
+                     <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="usePresharedKey" name="usePresharedKey" checked>
+                        <label class="form-check-label" for="usePresharedKey">Use Preshared Key</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Peer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Peer Details Modal -->
+<div class="modal fade" id="peerDetailsModal" tabindex="-1" aria-labelledby="peerDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="peerDetailsModalLabel">Peer Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Name:</strong> <span id="modalPeerName"></span></p>
+        <p><strong>IP Address:</strong> <span id="modalPeerIP"></span></p>
+        <p><strong>Public Key:</strong> <span id="modalPublicKey" class="text-break"></span></p>
+        <p><strong>Allowed IPs:</strong> <span id="modalAllowedIPs"></span></p>
+        <p><strong>Latest Handshake:</strong> <span id="modalLatestHandshake"></span></p>
+        <p><strong>Transfer:</strong> <span id="modalTransfer"></span></p>
+        <p><strong>Data Limit:</strong> <span id="modalDataLimit"></span></p>
+        <p><strong>Expiry Date:</strong> <span id="modalExpiryDate"></span></p>
+        <p><strong>DNS:</strong> <span id="modalDNS"></span></p>
+        <p><strong>Endpoint:</strong> <span id="modalEndpoint"></span></p>
+        <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+        <div class="mt-3">
+            <h6>QR Code:</h6>
+            <div id="modalQrCode" class="text-center"></div>
+        </div>
+        <div class="mt-3">
+            <h6>Config File:</h6>
+            <pre><code id="modalConfigFileContent"></code></pre>
+            <button id="downloadConfigButton" class="btn btn-sm btn-secondary mt-2">Download Config</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Peer Modal -->
+<div class="modal fade" id="editPeerModal" tabindex="-1" aria-labelledby="editPeerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editPeerModalLabel">Edit Peer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editPeerForm">
+            <input type="hidden" id="editPeerNameOriginal" name="peerNameOriginal">
+            <input type="hidden" id="editPeerConfigOriginal" name="peerConfigOriginal">
+            <div class="mb-3">
+                <label for="editPeerName" class="form-label">Peer Name (cannot be changed)</label>
+                <input type="text" class="form-control" id="editPeerName" name="peerName" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="editDataLimit" class="form-label">Data Limit (GB)</label>
+                <input type="number" class="form-control" id="editDataLimit" name="dataLimit" min="0">
+            </div>
+            <div class="mb-3">
+                <label for="editExpiryTime" class="form-label">Expiry Time (days from now)</label>
+                <input type="number" class="form-control" id="editExpiryTime" name="expiryTime" min="0">
+            </div>
+            <div class="mb-3">
+                <label for="editDnsServers" class="form-label">DNS Servers (comma-separated)</label>
+                <input type="text" class="form-control" id="editDnsServers" name="dnsServers">
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<!-- Any page-specific scripts for peers.html can go here -->
+{% endblock %}

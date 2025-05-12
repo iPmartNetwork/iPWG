@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Wireguard Manager{% endblock %}
+
+{% block head_scripts %}
+    <script src="{{ url_for('static', filename='js/settings.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Settings</h1>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" id="settingsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="user-settings-tab" data-bs-toggle="tab" data-bs-target="#user-settings" type="button" role="tab" aria-controls="user-settings" aria-selected="true">User Settings</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="wireguard-settings-tab" data-bs-toggle="tab" data-bs-target="#wireguard-settings" type="button" role="tab" aria-controls="wireguard-settings" aria-selected="false">Wireguard Config</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="app-settings-tab" data-bs-toggle="tab" data-bs-target="#app-settings" type="button" role="tab" aria-controls="app-settings" aria-selected="false">App Settings</button>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content" id="settingsTabsContent">
+        <!-- User Settings Tab -->
+        <div class="tab-pane fade show active" id="user-settings" role="tabpanel" aria-labelledby="user-settings-tab">
+            <div class="mt-3">
+                <h4>Update User Credentials</h4>
+                <form id="updateUserForm">
+                    <div class="mb-3">
+                        <label for="currentUsername" class="form-label">Current Username</label>
+                        <input type="text" class="form-control" id="currentUsername" value="{{ session.get('username', '') }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newUsername" class="form-label">New Username</label>
+                        <input type="text" class="form-control" id="newUsername" name="newUsername">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update Credentials</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Wireguard Settings Tab -->
+        <div class="tab-pane fade" id="wireguard-settings" role="tabpanel" aria-labelledby="wireguard-settings-tab">
+            <div class="mt-3">
+                <h4>Update Wireguard Configuration</h4>
+                <form id="updateWireguardConfigForm">
+                    <div class="mb-3">
+                        <label for="wgConfigSelect" class="form-label">Select Configuration File:</label>
+                        <select class="form-select" id="wgConfigSelect" name="config_name">
+                            {% for config_name in configs %}
+                            <option value="{{ config_name }}">{{ config_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div id="wireguardConfigDetails">
+                        <!-- Details will be loaded here by settings.js -->
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2">Save Wireguard Changes</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- App Settings Tab -->
+        <div class="tab-pane fade" id="app-settings" role="tabpanel" aria-labelledby="app-settings-tab">
+            <div class="mt-3">
+                <h4>Application Settings</h4>
+                <form id="updateAppSettingsForm">
+                     <div class="mb-3">
+                        <label for="apiBaseUrl" class="form-label">API Base URL:</label>
+                        <input type="text" class="form-control" id="apiBaseUrl" name="api_base_url" value="{{ app_settings.get('API_BASE_URL', '') }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="sessionKey" class="form-label">Session Secret Key:</label>
+                        <input type="text" class="form-control" id="sessionKey" name="session_key" placeholder="Leave blank to keep current">
+                        <small class="form-text text-muted">Changing this will log out all users.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="allowedHosts" class="form-label">Allowed Hosts (comma-separated):</label>
+                        <input type="text" class="form-control" id="allowedHosts" name="allowed_hosts" value="{{ app_settings.get('ALLOWED_HOSTS', '') }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save App Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}

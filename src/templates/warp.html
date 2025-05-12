@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Warp Settings - Wireguard Manager{% endblock %}
+
+{% block head_scripts %}
+    <script src="{{ url_for('static', filename='js/warp.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Warp Settings & Management</h1>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Warp Configuration
+        </div>
+        <div class="card-body">
+            <form id="warpConfigForm">
+                <div class="mb-3">
+                    <label for="warpMode" class="form-label">Warp Mode:</label>
+                    <select class="form-select" id="warpMode" name="warp_mode">
+                        <option value="disabled" {% if warp_settings.get('mode') == 'disabled' %}selected{% endif %}>Disabled</option>
+                        <option value="warp" {% if warp_settings.get('mode') == 'warp' %}selected{% endif %}>WARP</option>
+                        <option value="warp+plus" {% if warp_settings.get('mode') == 'warp+plus' %}selected{% endif %}>WARP+ (Requires License Key)</option>
+                    </select>
+                </div>
+                <div class="mb-3" id="licenseKeyGroup" {% if warp_settings.get('mode') != 'warp+plus' %}style="display: none;"{% endif %}>
+                    <label for="warpLicenseKey" class="form-label">Warp+ License Key:</label>
+                    <input type="text" class="form-control" id="warpLicenseKey" name="license_key" value="{{ warp_settings.get('license_key', '') }}">
+                </div>
+                <div class="mb-3">
+                    <label for="customEndpoint" class="form-label">Custom Endpoint (optional):</label>
+                    <input type="text" class="form-control" id="customEndpoint" name="custom_endpoint" value="{{ warp_settings.get('custom_endpoint', '') }}" placeholder="e.g., engage.cloudflareclient.com:2408">
+                </div>
+                 <div class="mb-3">
+                    <label for="dnsServer" class="form-label">DNS Server for Warp (optional):</label>
+                    <input type="text" class="form-control" id="dnsServer" name="dns_server" value="{{ warp_settings.get('dns_server', '1.1.1.1') }}" placeholder="e.g., 1.1.1.1">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Warp Settings</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            Warp Service Management
+        </div>
+        <div class="card-body">
+            <p><strong>Warp Service Status:</strong> <span id="warpServiceStatus" class="fw-bold">Unknown</span></p>
+            <button class="btn btn-success me-2" id="startWarpBtn">Enable Warp</button>
+            <button class="btn btn-danger me-2" id="stopWarpBtn">Disable Warp</button>
+            <button class="btn btn-info" id="restartWarpBtn">Restart Warp Service</button>
+            <div id="warpLogOutput" class="mt-3 p-2" style="background-color: #0A192F; color: #CCD6F6; border: 1px solid #30A5BF; border-radius: 5px; min-height: 100px; max-height: 300px; overflow-y: auto;">
+                <!-- Warp logs will appear here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{% endblock %}
