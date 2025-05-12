@@ -187,7 +187,7 @@ print(f"[INFO] Detected System Timezone: {system_timezone}")
 @app.route("/set-language", methods=["POST"])
 def set_language():
     selected_language = request.form.get("language")
-    if selected_language in ["en", "fa"]:
+    if selected_language in ["en"]:
         session["language"] = selected_language
         response = make_response(redirect(request.referrer or url_for("home")))
         response.set_cookie("language", selected_language, max_age=30*24*60*60)  
@@ -463,7 +463,7 @@ def run_telegram_install_script(language="en"):
     update_progress(0, "Starting installation.")
 
     base_path = os.path.dirname(os.path.abspath(__file__))
-    script_name = "install_telegram.sh" if language == "en" else "install_telegram-fa.sh"
+    script_name = "install_telegram.sh"
     script_path = os.path.join(base_path, script_name)
 
     try:
@@ -500,8 +500,7 @@ def run_telegram_install_script(language="en"):
 
 @app.route("/install-telegram-fa", methods=["POST"])
 def install_telegram_fa():
-    threading.Thread(target=run_telegram_install_script, args=("fa",)).start()
-    return jsonify({"message": "Persian installation started.", "status": "installing"})
+    return jsonify({"message": "Persian installation is no longer supported.", "status": "error"}), 400
 
 
 @app.route("/telegram-install-progress", methods=["GET"])
@@ -522,7 +521,7 @@ def install_telegram_en():
 @app.route("/start-telegram", methods=["POST"])
 def start_telegram():
     language = session.get("language", "en")
-    service_name = "telegram-bot-en.service" if language == "en" else "telegram-bot-fa.service"
+    service_name = "telegram-bot-en.service"
 
     try:
         sanitized_service_name = sanitize_service_name(service_name)
@@ -556,7 +555,7 @@ def start_telegram():
 @app.route("/stop-telegram", methods=["POST"])
 def stop_telegram():
     language = session.get("language", "en")
-    service_name = "telegram-bot-en.service" if language == "en" else "telegram-bot-fa.service"
+    service_name = "telegram-bot-en.service"
 
     try:
         sanitized_service_name = sanitize_service_name(service_name)
@@ -598,7 +597,7 @@ def sanitize_service_name(service_name):
 @app.route("/uninstall-telegram", methods=["POST"])
 def uninstall_telegram():
     language = session.get("language", "en")
-    service_name = "telegram-bot-en.service" if language == "en" else "telegram-bot-fa.service"
+    service_name = "telegram-bot-en.service"
     service_file = f"/etc/systemd/system/{service_name}"
 
     try:
@@ -676,7 +675,7 @@ def get_admin_chat_ids():
 def bot_status():
     try:
         language = session.get("language", "en")
-        service_name = "telegram-bot-en.service" if language == "en" else "telegram-bot-fa.service"
+        service_name = "telegram-bot-en.service"
         service_file = f"/etc/systemd/system/{service_name}"
 
         if not os.path.exists(service_file):
@@ -934,8 +933,7 @@ def home():
         flash("Please log in to access the dashboard.", "error")
         return redirect("/login")
 
-    language = session.get('language', 'en')
-    template_name = "index.html" if language == "fa" else "index.html"
+    template_name = "index.html"
     return render_template(template_name, username=session["username"])
 
 
@@ -973,8 +971,7 @@ def peers_list():
         flash("Please log in to access peers.", "error")
         return redirect("/login")
     
-    language = session.get('language', 'en')
-    template_name = "peers-fa.html" if language == "fa" else "peers.html"
+    template_name = "peers.html"
     return render_template(template_name)
 
 
@@ -984,16 +981,14 @@ def api():
         flash("Please log in to access peers.", "error")
         return redirect("/login")
     
-    language = session.get('language', 'en')
-    template_name = "telegram-fa.html" if language == "fa" else "telegram.html"
+    template_name = "telegram.html"
     return render_template(template_name)
 
 
 @app.route("/login", methods=["GET", "POST"])
 @limiter.limit("10 per minute")
 def login():
-    language = session.get('language', 'en')
-    template_name = "login-fa.html" if language == "fa" else "login.html"
+    template_name = "login.html"
 
     if request.method == "GET":
         if not os.path.exists(db_file):
@@ -1040,8 +1035,7 @@ def settings():
         flash("Please log in to access settings.", "error")
         return redirect("/login")
     
-    language = session.get('language', 'en')
-    template_name = "settings-fa.html" if language == "fa" else "settings.html"
+    template_name = "settings.html"
     return render_template(template_name)
 
 
@@ -1449,8 +1443,7 @@ def backups_page():
         flash("Please log in to access backups.", "error")
         return redirect("/login")
 
-    language = session.get('language', 'en') 
-    template_name = "backups-fa.html" if language == "fa" else "backups.html"
+    template_name = "backups.html"
     return render_template(template_name)
 
 
@@ -1528,8 +1521,7 @@ def api_reset_user():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    language = session.get('language', 'en') 
-    template_name = "register-fa.html" if language == "fa" else "register.html"
+    template_name = "register.html"
 
     try:
         with open(DB_FILE, "r") as file:
@@ -2365,82 +2357,6 @@ def get_peer_details_for_bot():
 
     except Exception as e:
         app.logger.error(f"Error in fetching peer details for bot: {str(e)}")
-        return jsonify({"error": "Couldn't fetch peer details"}), 500
-
-@app.route('/api/bot-peer-details-fa', methods=['GET'])
-def get_peer_details_for_bot_fa():
-    peer_name = request.args.get('peerName')
-    config_name = request.args.get('configName')
-
-    if not peer_name:
-        return jsonify({"error": "Peer name is required"}), 400
-
-    if not config_name:
-        return jsonify({"error": "Config name is required"}), 400
-
-    try:
-        peers = load_peers_from_json(config_name)
-        if not peers:
-            return jsonify({"error": f"No peers found for config '{config_name}'"}), 404
-
-        peer = next((p for p in peers if p["peer_name"] == peer_name), None)
-        if not peer:
-            return jsonify({"error": f"Peer '{peer_name}' not found"}), 404
-
-        peer_ip = peer.get('peer_ip')
-        if not peer_ip:
-            return jsonify({"error": "Invalid or missing peer IP"}), 400
-
-        app.logger.debug(f"Peer data: {peer}")
-
-        allowed_ips = peer.get("allowed_ips") or "0.0.0.0/0, ::/0"
-
-        qr_code = (
-            f"[Interface]\n"
-            f"PrivateKey = {peer.get('private_key', 'YOUR_PRIVATE_KEY')}\n"
-            f"Address = {peer_ip}/32\n"
-            f"DNS = {peer.get('dns', '1.1.1.1')}\n\n"
-            f"[Peer]\n"
-            f"PublicKey = {peer.get('public_key', 'YOUR_PUBLIC_KEY')}\n"
-            f"AllowedIPs = {allowed_ips}\n"
-            f"PersistentKeepalive = {peer.get('persistent_keepalive', 25)}"
-        )
-
-        created_at_str = peer.get("created_at", datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"))
-        created_at = datetime.strptime(created_at_str, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
-        expiry_days = peer.get("expiry_days", 30)
-        expiry = created_at + timedelta(days=expiry_days)
-        now = datetime.now(timezone.utc)
-
-        expiry_human = (
-            f"{(expiry - now).days} روز باقی مانده" if (expiry - now).total_seconds() > 0 else "منقضی"
-        )
-
-        data_limit = peer.get('limit', 'N/A')
-        used_data = peer.get('used', 0)
-        remaining_data = peer.get('remaining', 0)
-
-        app.logger.debug(f"Data limit: {data_limit}, Used data: {used_data}, Remaining data: {remaining_data}")
-
-        peer_details = {
-            "peer_name": peer_name,
-            "peer_ip": peer_ip,
-            "qr_code": qr_code,
-            "dns": peer.get('dns', '1.1.1.1'),
-            "limit": data_limit,
-            "used": used_data,
-            "remaining": remaining_data,
-            "created_at": created_at_str,
-            "expiry": expiry.strftime("%Y-%m-%d %H:%M:%S"),
-            "expiry_human": expiry_human
-        }
-
-        app.logger.debug(f"Peer details to return: {peer_details}")
-
-        return jsonify(peer_details), 200
-
-    except Exception as e:
-        app.logger.error(f"Error in fetching peer details for bot (fa): {str(e)}")
         return jsonify({"error": "Couldn't fetch peer details"}), 500
 
 
@@ -3857,7 +3773,7 @@ def warp_page():
         return redirect("/login")
     
     language = session.get('language', 'en')
-    template_name = "warp-fa.html" if language == "fa" else "warp.html"
+    template_name = "warp.html"
     return render_template(template_name)
 
 short_links = {}
@@ -4890,7 +4806,7 @@ def edit_peer():
 
 
 
-@app.route("/api/wireguard-details", methods=["GET"])
+@app.route("/api/wireguard-details", methods["GET"])
 def wireguard_details():
     config_file = request.args.get("config", "wg0.conf")
     
