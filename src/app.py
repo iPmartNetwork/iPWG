@@ -911,11 +911,11 @@ def setup_logging(debug_mode):
 
 
 def load_users():
-    with open(DB_FILE, "r") as file: # Changed db_file to DB_FILE
+    with open(db_file, "r") as file:
         return json.load(file)
 
 def save_users(users):
-    with open(DB_FILE, "w") as file: # Changed db_file to DB_FILE
+    with open(db_file, "w") as file:
         json.dump(users, file, indent=4)
 
 @app.route('/api/stuff', methods=['GET'])
@@ -977,7 +977,12 @@ def home():
         flash("Please log in to access the dashboard.", "error")
         return redirect("/login")
 
+<<<<<<< HEAD
+    language = session.get('language', 'en')
+    template_name = "index-fa.html" if language == "fa" else "index.html"
+=======
     template_name = "index.html"
+>>>>>>> 302d2b930df0bd7e98c9553e9f6382f0dbe7f58d
     return render_template(template_name, username=session["username"])
 
 
