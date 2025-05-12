@@ -1,0 +1,146 @@
+<!DOCTYPE html> <!-- Added Doctype -->
+<html lang="fa" dir="rtl"> <!-- Added lang and dir -->
+{% with title="Sign In"%}
+    {% include "header.html"%}
+{% endwith %}
+<style>
+    body.signin-body {
+        background-color: #eef1f4; /* Light grayish-blue background */
+        display: flex;
+        flex-direction: column; /* Stack navbar and content */
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        padding-top: 56px; /* Space for navbar if it were fixed, adjust if navbar is not fixed on this page */
+    }
+    .login-form-container {
+        background-color: #ffffff;
+        padding: 2.5rem; /* Increased padding */
+        border-radius: 0.75rem; /* More rounded corners */
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1); /* Softer, larger shadow */
+        width: 100%;
+        max-width: 420px; /* Slightly wider form */
+        text-align: center; /* Center logo and title */
+    }
+    .login-logo {
+        max-width: 100px; /* Adjust as needed */
+        margin-bottom: 1.5rem;
+    }
+    .login-form-container h1 {
+        font-size: 1.75rem; /* Adjusted title size */
+        margin-bottom: 1.5rem;
+        color: #343a40;
+    }
+    .form-group {
+        margin-bottom: 1.25rem; /* Spacing between form groups */
+        position: relative; /* For icon positioning */
+    }
+    .form-control-icon {
+        position: absolute;
+        top: 50%;
+        left: 1rem; /* Position icon inside the input field */
+        transform: translateY(-50%);
+        color: #6c757d; /* Muted icon color */
+        font-size: 1.1rem;
+    }
+    #username, #password {
+        padding-left: 3rem; /* Space for the icon */
+        height: calc(1.5em + 1rem + 2px); /* Taller input fields */
+        font-size: 1rem;
+    }
+    .btn-signin {
+        padding: 0.75rem 1.5rem; /* Larger button padding */
+        font-size: 1rem;
+        font-weight: 500;
+        background-color: #007bff; /* Primary blue */
+        border-color: #007bff;
+        transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    }
+    .btn-signin:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+    .version-footer {
+        position: absolute; /* Changed from fixed to absolute for better centering with flex body */
+        bottom: 1.5rem;
+        width: 100%;
+        text-align: center;
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
+</style>
+<body class="signin-body"> <!-- Added class to body -->
+    {% include "navbar.html" %} <!-- Assuming navbar is simple or adapted for login -->
+    <main role="main" class="login-form-container">
+        <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo" class="login-logo">
+        <h1>Wireguard Panel</h1>
+        <form action="/auth" method="post" id="loginForm"> <!-- Added id to form -->
+            {% if message != "" %}
+                <div class="alert alert-warning text-center small" role="alert">
+                    First you need to sign in
+                </div>
+            {% endif %}
+            <div class="alert alert-danger d-none mt-3 mb-0" role="alert"></div> <!-- Adjusted alert styling -->
+            <div class="form-group">
+                <i class="bi bi-person-circle form-control-icon"></i>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Panel Username" required>
+            </div>
+            <div class="form-group">
+                <i class="bi bi-key-fill form-control-icon"></i>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Panel Password" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block btn-signin">Sign in</button> <!-- btn-block for full width, btn-primary for Bootstrap styling -->
+        </form>
+    </main>
+    <small class="version-footer">Version: {{ version }}</small>
+</body>
+{% include "footer.html" %}
+<script>
+    let loginButton = $('button[type="submit"]');
+    loginButton.on("click", function(e){
+        e.preventDefault();
+        let $password = $("#password");
+        let $username = $("#username");
+        let req = [$password, $username];
+        let check = true
+        for (let i = 0; i < req.length; i++){
+            if ($(req[i]).val().length === 0){
+                loginButton.html("Sign In");
+                check = false;
+                $(req[i]).addClass("is-invalid");
+                break;
+            }
+        }
+        if (check){
+            $(this).html("Please Wait ... ").attr("disabled", "disabled");
+            $.ajax({
+                url: "/auth",
+                method: "POST",
+                headers:{"Content-Type": "application/json"},
+                data: JSON.stringify({
+                    "username": $("#username").val(),
+                    "password": $("#password").val()
+                })
+            }).done(function(res){
+                if (res.status === true){
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get("redirect")){
+                        if (document.URL.substring(0, 5) == "http:"){
+                            window.location.replace(`http://${urlParams.get("redirect")}`)
+                        }else if (document.URL.substring(0, 5) == "https"){
+                            window.location.replace(`https://${urlParams.get("redirect")}`)
+                        }
+                    }else{
+                        window.location.replace("/");
+                    }
+                }else{
+                    $(".alert").html(res.msg).removeClass("d-none").fadeIn();
+                    loginButton.html("Sign In").removeAttr("disabled");
+                    $("input[required]").addClass("is-invalid");
+                }
+            });
+        }
+    });
+</script>
+</html>

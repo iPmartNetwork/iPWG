@@ -1,0 +1,97 @@
+<!-- index.html - < Wireguard-Panel > - Copyright(C) 2021 Donald Zou customaized by iPmartNetwork
+<html lang="fa" dir="rtl"> <!-- Added dir="rtl" for Persian language -->
+{% with %}
+    {% set title="Home" %}
+    {% include "header.html" %}
+{% endwith %}
+
+<body>
+{% include "navbar.html" %}
+<div class="container-fluid">
+    {% include "sidebar.html" %}
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4 mb-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1 class="h2">iPWGDashboard</h1>
+        </div>
+        {% if msg != "" %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                Configuration toggle failed. Please check the following error message:
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <pre class="index-alert"><code>{{ msg }}</code></pre>
+        {% endif %}
+
+        {% if conf == [] %}
+            <div class="alert alert-info" role="alert">
+                You have no WireGuard configurations right now.
+            </div>
+        {% endif %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4"> <!-- Using Bootstrap grid for cards -->
+            {% for i in conf %}
+            <div class="col">
+                <div class="card h-100 conf_card"> <!-- Added h-100 for equal height cards -->
+                    <div class="card-body d-flex flex-column"> <!-- Flex column for better content alignment -->
+                        <div class="mb-2">
+                            <small class="text-muted"><strong>Configuration</strong></small>
+                            <a href="/configuration/{{ i['conf'] }}" class="conf_link stretched-link"> <!-- stretched-link makes whole card clickable -->
+                                <h5 class="card-title mb-0"><samp>{{ i['conf'] }}</samp></h5>
+                            </a>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted"><strong>Status</strong></small>
+                            <h6 class="mb-0" style="text-transform: uppercase;">
+                                {{ i['status'] }}
+                                <span class="dot dot-{{ i['status'] }}"></span>
+                            </h6>
+                        </div>
+                        <div class="mb-3"> <!-- Increased margin-bottom -->
+                            <small class="text-muted"><strong>Public Key</strong></small>
+                            <h6 class="mb-0 text-truncate"><samp>{{ i['public_key'] }}</samp></h6> <!-- text-truncate for long keys -->
+                        </div>
+                        <div class="mt-auto d-flex justify-content-end"> <!-- mt-auto pushes switch to bottom, d-flex for alignment -->
+                            {% if i['checked'] == "checked" %}
+                                <a href="#" id="{{ i['conf'] }}" {{ i['checked'] }} class="switch text-success tt" title="Turn Off">
+                                    <i class="bi bi-toggle-on"></i>
+                                </a>
+                            {% else %}
+                                <a href="#" id="{{ i['conf'] }}" {{ i['checked'] }} class="switch text-secondary tt" title="Turn On">
+                                    <i class="bi bi-toggle-off"></i>
+                                </a>
+                            {% endif %}
+                            <div class="spinner-border spinner-border-sm text-primary ms-2" role="status" style="display: none"> <!-- ms-2 for margin -->
+                                <span class="visually-hidden">Loading...</span> <!-- Bootstrap 5 class for screen readers -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+</div>
+{% include "tools.html" %}
+</body>
+{% include "footer.html" %}
+<script>
+    $('.switch').on("click", function (e) {
+        e.preventDefault(); // Prevent default link behavior
+        var $switchButton = $(this);
+        var $spinner = $switchButton.siblings($(".spinner-border"));
+
+        $spinner.css("display", "inline-block");
+        $switchButton.hide(); // Hide the switch itself
+
+        // Simulate API call delay for visual feedback (remove in production)
+        // setTimeout(function() {
+            location.replace("/switch/" + $switchButton.attr('id'));
+        // }, 500);
+    });
+    $(".sb-home-url").addClass("active");
+
+    $(".card-body").on("click", function (handle) {
+        if ($(handle.target).attr("class") !== "bi bi-toggle2-off" && $(handle.target).attr("class") !== "bi bi-toggle2-on") {
+            window.open($(this).find("a").attr("href"), "_self");
+        }
+    })
+</script>
+</html>
