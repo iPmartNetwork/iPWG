@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ثبت نام در پنل</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon-32x32.png') }}" type="image/png">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box register-box">
+            <img src="{{ url_for('static', filename='images/ringo_high_quality.png') }}" alt="لوگو پنل" class="login-logo">
+            <h2>ایجاد حساب کاربری جدید</h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category != 'message' else 'danger' }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('register') }}">  {# Assuming a 'register' route #}
+                {{ form.hidden_tag() if form and form.hidden_tag }}
+                <div class="form-group">
+                    <label for="username">نام کاربری</label>
+                    {{ form.username(class="form-control", placeholder="یک نام کاربری انتخاب کنید") if form else '<input type="text" id="username" name="username" class="form-control" placeholder="یک نام کاربری انتخاب کنید" required>'|safe }}
+                </div>
+                <div class="form-group">
+                    <label for="password">رمز عبور</label>
+                    {{ form.password(class="form-control", placeholder="رمز عبور قوی انتخاب کنید") if form else '<input type="password" id="password" name="password" class="form-control" placeholder="رمز عبور قوی انتخاب کنید" required>'|safe }}
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">تکرار رمز عبور</label>
+                    {{ form.confirm_password(class="form-control", placeholder="رمز عبور را تکرار کنید") if form else '<input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="رمز عبور را تکرار کنید" required>'|safe }}
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">ثبت نام</button>
+            </form>
+            <div class="login-links mt-3">
+                <a href="{{ url_for('login') }}">حساب کاربری دارید؟ وارد شوید</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

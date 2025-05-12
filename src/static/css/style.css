@@ -169,6 +169,12 @@ body {
     text-align: center;
 }
 
+.login-box.register-box {
+    /* You can add specific styles for the register box if it needs to differ from the login box */
+    /* For example, slightly more padding or a different width if needed */
+    width: 420px; /* Slightly wider for more fields potentially */
+}
+
 .login-logo {
     max-width: 120px; /* Adjust as needed */
     margin-bottom: 20px;
