@@ -935,7 +935,7 @@ def home():
         return redirect("/login")
 
     language = session.get('language', 'en')
-    template_name = "index-fa.html" if language == "fa" else "index.html"
+    template_name = "index.html" if language == "fa" else "index.html"
     return render_template(template_name, username=session["username"])
 
 
