@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Wireguard Manager{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='webfonts/css/all.min.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='images/site.webmanifest') }}">
+    {% block head_scripts %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('main.home') }}">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo">
+                Wireguard Manager
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'main.home' %}active{% endif %}" href="{{ url_for('main.home') }}"><i class="fas fa-home"></i> Home</a>
+                    </li>
+                    {% if session.get('logged_in') %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.peers' %}active{% endif %}" href="{{ url_for('main.peers') }}"><i class="fas fa-users"></i> Peers</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.backups_page' %}active{% endif %}" href="{{ url_for('main.backups_page') }}"><i class="fas fa-save"></i> Backups</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.telegram_page' %}active{% endif %}" href="{{ url_for('main.telegram_page') }}"><i class="fab fa-telegram-plane"></i> Telegram</a>
+                        </li>
+                         <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.warp_page' %}active{% endif %}" href="{{ url_for('main.warp_page') }}"><i class="fas fa-bolt"></i> Warp</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.settings' %}active{% endif %}" href="{{ url_for('main.settings') }}"><i class="fas fa-cog"></i> Settings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint == 'main.login' %}active{% endif %}" href="{{ url_for('main.login') }}"><i class="fas fa-sign-in-alt"></i> Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content container mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer mt-auto py-3">
+        <div class="container text-center">
+            <span class="text-muted">Wireguard Manager &copy; <span id="currentYear"></span> - Developed with <i class="fas fa-heart text-danger"></i></span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById("currentYear").textContent = new Date().getFullYear();
+        // Removed any Farsi-specific JavaScript if present.
+        // The language selection form, if it existed here and was specific to en/fa,
+        // would either be removed or simplified to only allow/default to English.
+        // For example, if there was a dropdown:
+        // <form action="{{ url_for('main.set_language') }}" method="post">
+        //     <select name="language" onchange="this.form.submit()">
+        //         <option value="en" {% if session.language == 'en' %}selected{% endif %}>English</option>
+        //         <!-- <option value="fa" {% if session.language == 'fa' %}selected{% endif %}>فارسی</option> -->
+        //     </select>
+        // </form>
+        // The above is an example, actual removal depends on original base.html structure.
+        // Since the set_language route in app.py is modified to only accept 'en',
+        // any UI for 'fa' selection would be non-functional or should be removed.
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
