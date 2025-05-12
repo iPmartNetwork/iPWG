@@ -868,11 +868,11 @@ def setup_logging(debug_mode):
 
 
 def load_users():
-    with open(DB_FILE, "r") as file: # Changed db_file to DB_FILE
+    with open(db_file, "r") as file:
         return json.load(file)
 
 def save_users(users):
-    with open(DB_FILE, "w") as file: # Changed db_file to DB_FILE
+    with open(db_file, "w") as file:
         json.dump(users, file, indent=4)
 
 @app.route('/api/stuff', methods=['GET'])
@@ -935,7 +935,7 @@ def home():
         return redirect("/login")
 
     language = session.get('language', 'en')
-    template_name = "index.html" if language == "fa" else "index.html"
+    template_name = "index-fa.html" if language == "fa" else "index.html"
     return render_template(template_name, username=session["username"])
 
 
