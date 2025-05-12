@@ -487,16 +487,33 @@ def run_telegram_install_script(language="en"):
         result = subprocess.run([resolved_script_path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         if result.returncode != 0:
-            update_progress(0, f"Script failed: {result.stderr}")
-            raise Exception(f"Script failed with error: {result.stderr}")
+            error_message = result.stderr
+            if "Could not get lock /var/lib/dpkg/lock-frontend" in error_message or \
+               "Unable to acquire the dpkg frontend lock" in error_message:
+                update_progress(0, "Installation failed: Another package manager (apt) process is running. Please wait for it to finish or terminate it, then try again.")
+            else:
+                update_progress(0, f"Script failed: {error_message}")
+            raise Exception(f"Script failed with error: {error_message}")
 
         update_progress(100, "Installation completed successfully.")
 
     except Exception as e:
-        update_progress(0, f"Installation failed: {e}")
+        # Ensure progress is updated even if an exception occurs before the subprocess call
+        if telegram_installing and not "Script failed" in str(e) and not "Installation failed" in str(e) : # Avoid double messaging
+            update_progress(0, f"Installation failed: {e}")
     finally:
         telegram_installing = False
-        update_progress(100, "Installation process finalized.")
+        # Avoid overwriting specific error messages with "Installation process finalized." if it failed
+        if os.path.exists(PROGRESS_FILE):
+            with open(PROGRESS_FILE, "r") as f:
+                current_progress = json.load(f)
+            if current_progress.get("progress") != 100 and "failed" not in current_progress.get("message", "").lower():
+                 update_progress(current_progress.get("progress", 0), "Installation process finalized with issues.")
+            elif current_progress.get("progress") == 100:
+                 update_progress(100, "Installation process finalized.")
+        else:
+            update_progress(0, "Installation process finalized with issues.")
+
 
 @app.route("/install-telegram-fa", methods=["POST"])
 def install_telegram_fa():
