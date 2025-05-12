@@ -60,8 +60,8 @@ from io import BytesIO
 from flask_session import Session
 from PIL import Image, ImageDraw, ImageFont
 from flask import url_for
-import time
-
+import os # Ensure os is imported for os.path.exists and os.path.isfile
+import logging # Ensure logging is imported
 
 def load_config():
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -102,6 +102,33 @@ app.config['SESSION_COOKIE_NAME'] = 'session'
 app.secret_key = config["flask"]["secret_key"]
 Session(app)
 app.debug = config["flask"]["debug"]
+
+# Call setup_logging early
+# Note: setup_logging function definition is much later in the file, Python handles this.
+setup_logging(app.debug)
+
+# Initial diagnostic logging
+app.logger.info("Flask application instance created and logging configured.")
+app.logger.info(f"Flask debug mode: {app.debug}")
+app.logger.info(f"Initial loaded Flask config from config.yaml: {config.get('flask')}")
+
+flask_cfg_from_config = config.get("flask", {})
+if flask_cfg_from_config.get("tls"):
+    app.logger.info("TLS is configured as ENABLED in config.yaml.")
+    cert_path_str = flask_cfg_from_config.get('cert_path', '')
+    key_path_str = flask_cfg_from_config.get('key_path', '')
+
+    cert_exists = os.path.exists(cert_path_str) and os.path.isfile(cert_path_str)
+    key_exists = os.path.exists(key_path_str) and os.path.isfile(key_path_str)
+
+    app.logger.info(f"Certificate file path from config.yaml: '{cert_path_str}', Exists and is a file: {cert_exists}")
+    app.logger.info(f"Key file path from config.yaml: '{key_path_str}', Exists and is a file: {key_exists}")
+
+    if not cert_exists or not key_exists:
+        app.logger.warning("TLS is enabled, but the certificate or key file does not exist, is not a file, or is inaccessible at the specified path. The web server (e.g., Gunicorn) might fail to start or serve HTTPS correctly.")
+else:
+    app.logger.info("TLS is configured as DISABLED in config.yaml.")
+
 app.jinja_env.autoescape = select_autoescape(['html', 'htm', 'xml', 'xhtml'])
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 print(f"Base Directory: {BASE_DIR}")
@@ -866,21 +893,21 @@ def setup_logging(debug_mode):
     file_handler = logging.FileHandler(log_file_path)
     file_handler.setFormatter(logging.Formatter(log_format))
 
-    stream_handler = logging.StreamHandler()
+    stream_handler = logging.StreamHandler() # Logs to stderr/stdout
     stream_handler.setFormatter(logging.Formatter(log_format))
 
-    logger = logging.getLogger()
+    logger = logging.getLogger() # Root logger
     logger.handlers.clear()  
+
+    logger.addHandler(file_handler) # Always log to file
+    logger.addHandler(stream_handler) # Always log to stream for Gunicorn/systemd visibility
 
     if debug_mode:
         logger.setLevel(logging.DEBUG)
-        logger.addHandler(file_handler)
-        logger.addHandler(stream_handler)
+        logging.getLogger("werkzeug").setLevel(logging.DEBUG) # More verbose werkzeug in debug
     else:
         logger.setLevel(logging.INFO)
-        logger.addHandler(file_handler)
-
-        logging.getLogger("werkzeug").setLevel(logging.ERROR)
+        logging.getLogger("werkzeug").setLevel(logging.ERROR) # Quieter Werkzeug in non-debug
 
 
 def load_users():
@@ -1105,7 +1132,8 @@ def update_flask_config():
                 config = yaml.safe_load(file)
                 existing_port = config.get("flask", {}).get("port")
         except FileNotFoundError:
-            config = {"flask": {}, "wireguard": {}}
+            config = {"flask": {}, "wireguard": {}} # Ensure wireguard key exists if creating new config
+            config.setdefault("wireguard", {}).setdefault("config_dir", "/etc/wireguard") # Default for wireguard
             existing_port = None
 
         config["flask"]["port"] = port
@@ -1143,6 +1171,7 @@ def update_flask_config():
                 response["service_restart"] = "wireguard-panel.service restarted successfully."
             except subprocess.CalledProcessError as e:
                 error_msg = e.stderr.strip() if e.stderr else str(e)
+                app.logger.error(f"Failed to restart {service_name} after config update: {error_msg}. Stdout: {e.stdout.strip()}")
                 return jsonify({
                     "message": "Flask config updated, but failed to restart Wireguard-panel.service.",
                     "error": error_msg
@@ -4248,7 +4277,7 @@ def obtain_peer_details_from_storage(peer_name, config_file, token):
 def get_public_ip():
     try:
         response = requests.get("https://api.ipify.org?format=json")
-        if response.status_code == 200:
+        if (response.status_code == 200):
             return response.json().get("ip")
     except Exception as e:
         print(f"error in fetching public IP: {e}")
@@ -5246,4 +5275,3 @@ if __name__ == "__main__":
         logging.info("Shutting down application.")
         if scheduler:
             scheduler.shutdown(wait=False)
-
