@@ -868,11 +868,11 @@ def setup_logging(debug_mode):
 
 
 def load_users():
-    with open(db_file, "r") as file:
+    with open(DB_FILE, "r") as file: # Changed db_file to DB_FILE
         return json.load(file)
 
 def save_users(users):
-    with open(db_file, "w") as file:
+    with open(DB_FILE, "w") as file: # Changed db_file to DB_FILE
         json.dump(users, file, indent=4)
 
 @app.route('/api/stuff', methods=['GET'])
